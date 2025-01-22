@@ -36,21 +36,47 @@ class MainActivity : AppCompatActivity() {
         val btn_equal = findViewById<Button>(R.id.btn_equal)
         val btn_divide = findViewById<Button>(R.id.btn_divide)
         val btn_clear = findViewById<Button>(R.id.btn_clear)
+        val btn_multiply = findViewById<Button>(R.id.btn_clear)
 
         val result = findViewById<TextView>(R.id.result)
 
-        val numberButtons = listOf(btn_0, btn_1, btn_2, btn_3, btn_4,
-                                    btn_5, btn_6, btn_7, btn_8, btn_9)
+        // Keep track of the expression as a string
+        var currentExpression = ""
 
+        // Buttons for numbers
+        val numberButtons =
+            listOf(btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9)
 
         numberButtons.forEachIndexed { index, button ->
             button.setOnClickListener {
-                result.text = result.text.toString() + index.toString()
+                // Append the number to the expression string
+                currentExpression += index.toString()
+                result.text = currentExpression
+                println("Current: $currentExpression")
+
+            }
+        }
+
+        // Buttons for operations
+        val operationButtons = listOf(
+            btn_plus to "+",
+            btn_minus to "-",
+            btn_multiply to "*",
+            btn_divide to "/"
+        )
+
+        operationButtons.forEach { (button, operator) ->
+            button.setOnClickListener {
+                // Append the operator to the expression string
+                currentExpression += operator
+                result.text = currentExpression
+                println("Current: $currentExpression")
+
             }
         }
 
 
-
+        println("CurrentExpression: $currentExpression")
     }
 
     private fun initializeViews() {
