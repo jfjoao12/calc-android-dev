@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        // Ask about val names convention
         val btn_0 = findViewById<Button>(R.id.btn_0)
         val btn_1 = findViewById<Button>(R.id.btn_1)
         val btn_2 = findViewById<Button>(R.id.btn_2)
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         btn_equal.setOnClickListener {
             number_2 = result.text.split('+')[1].toInt()
             Toast.makeText(this@MainActivity, "Second number is $number_2", Toast.LENGTH_SHORT).show()
-            result.text = (number_1 + number_2).toString()
+            result.text = (number_1 + number_2).toString()gi
         }
 
 
