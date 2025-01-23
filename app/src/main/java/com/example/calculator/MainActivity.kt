@@ -22,9 +22,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val CalcOps = CalcOps()
-
-        // Ask about val names convention
         val btn_0 = findViewById<Button>(R.id.btn_0)
         val btn_1 = findViewById<Button>(R.id.btn_1)
         val btn_2 = findViewById<Button>(R.id.btn_2)
@@ -42,97 +39,119 @@ class MainActivity : AppCompatActivity() {
         val btn_divide = findViewById<Button>(R.id.btn_divide)
         val btn_clear = findViewById<Button>(R.id.btn_clear)
         val btn_multiply = findViewById<Button>(R.id.btn_multiply)
+        val btn_delete = findViewById<Button>(R.id.btn_delete)
+        val btn_dot = findViewById<Button>(R.id.btn_dot)
+
+        val numbersListShow = findViewById<TextView>(R.id.numbersList)
+        val operationsListShow = findViewById<TextView>(R.id.operationsList)
 
         val result = findViewById<TextView>(R.id.result)
 
-        val numberButtons =
-            listOf(btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9)
+        val buttons =
+            listOf(
+                btn_0 to "0",
+                btn_1 to "1",
+                btn_2 to "2",
+                btn_3 to "3",
+                btn_4 to "4",
+                btn_5 to "5",
+                btn_6 to "6",
+                btn_7 to "7",
+                btn_8 to "8",
+                btn_9 to "9",
+                btn_plus to "+",
+                btn_minus to "-",
+                btn_multiply to "*",
+                btn_divide to "/",
+                btn_dot to "."
+                )
 
-        var number_1 = 0
-        var number_2 = 0
-        var operation_result = ""
-        var selectedOperator = ""
-
-        btn_clear.setOnClickListener {
-            if (result.text.isEmpty()) {
-                Toast.makeText(this, "Nothing to clear!", Toast.LENGTH_SHORT).show()
-            } else {
-                result.text = ""
-            }
+        val operatorsList = arrayOf('+', '-', '*', '/')
 
 
-        }
-
-        // Buttons for operations
-        val operationButtonsText = listOf(
-            btn_plus to "+",
-            btn_minus to "-",
-            btn_multiply to "*",
-            btn_divide to "/"
-        )
-
-        numberButtons.forEachIndexed { index, button ->
+        buttons.forEach { (button, value) ->
             button.setOnClickListener {
-                result.text = result.text.toString() + index.toString()
+                result.text = result.text.toString() + value
             }
         }
+        val operationsList = mutableListOf<Char>()
+        val numbersList = mutableListOf<String>()
 
-
-        operationButtonsText.forEach{ (button, operator) ->
-            button.setOnClickListener {
-                try {
-                    number_1 = result.text.toString().toInt()
-                    selectedOperator = operator
-                    result.text = (result.text.toString() + operator)
-                    Toast.makeText(this@MainActivity, "First number is $number_1", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception){
-                    Toast.makeText(this@MainActivity, "Can't add 2 consecutive operations!", Toast.LENGTH_SHORT).show()
-
-                }
-
-            }
-        }
-
-        // EQUAL WITH NO NUMBERS SHOULD GIVE ERROR!
         btn_equal.setOnClickListener {
 
-            if (result.text.isEmpty()) {
-                Toast.makeText(this, "Please input a number!", Toast.LENGTH_SHORT).show()
+            var catchNumber = ""
+            numbersList.clear()
+            operationsList.clear()
+
+            for (char in result.text) {
+                if (char != '+' && char != '-' && char != '/' && char != '*') {
+                    catchNumber += char
+                } else {
+                    numbersList.add(catchNumber)
+                    operationsList.add(char)
+                    catchNumber = ""
+
+                }
+            }
+            // Store last number
+            if (catchNumber.isNotEmpty()) {
+                numbersList.add(catchNumber)
+            }
+
+            var n = 0
+            var expression = ""
+            var expressionResult = numbersList[0].toDouble()
+
+            try {
+                for (i in operationsList.indices) {
+                    val num = numbersList[i + 1].toDouble()
+
+                    when (operationsList[i]) {
+                        '+' ->
+                            expressionResult += num
+                        '-' ->
+                            expressionResult -= num
+                        '/' ->
+                            if (num != 0.0 || num.toInt() != 0) {
+                                expressionResult /= num
+                            } else {
+                                Toast.makeText(this@MainActivity, "Cannot divide by zero!", Toast.LENGTH_SHORT).show()
+                                operationsList.clear()
+                                numbersList.clear()
+                            }
+                        '*' -> expressionResult *= num
+                    }
+                    expression += numbersList[i] + operatorsList[i] + numbersList[i + 1]
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@MainActivity, "Invalid Expression!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (expressionResult % 1 == 0.0) {
+                result.text = expressionResult.toInt().toString()
+                Toast.makeText(this@MainActivity, "Caught!", Toast.LENGTH_SHORT).show()
+
             }
             else {
-                try {
-                    when (selectedOperator) {
-                        "+" -> {
-                            number_2 = result.text.split('+')[1].toInt()
-                            operation_result = (number_1 + number_2).toString()
-                        }
-                        "-" -> {
-                            number_2 = result.text.split('-')[1].toInt()
-                            operation_result = (number_1 - number_2).toString()
-                        }
-                        "*" -> {
-                            number_2 = result.text.split('*')[1].toInt()
-                            operation_result = (number_1 * number_2).toString()
-                        }
-                        "/" -> {
-                            number_2 = result.text.split('/')[1].toInt()
-                            if (number_2 == 0) {
-                                Toast.makeText(this, "Cannot divide by zero!", Toast.LENGTH_SHORT).show()
-                                return@setOnClickListener // Exit early to prevent a crash
-                            }
-                            operation_result = (number_1 / number_2).toString()
-                        }
-                    }
-                } catch (e: Exception){
-                    Toast.makeText(this, "You need two numbers to do math!", Toast.LENGTH_SHORT).show()
-                }
+                result.text = expressionResult.toString()
 
-                if (operation_result.isNotEmpty()){
-                    result.text = operation_result
-                }
-                Toast.makeText(this@MainActivity, "Second number is $number_2", Toast.LENGTH_SHORT).show()
             }
-//            result.text = (number_1 + number_2).toString()
+
+            numbersListShow.text = "${numbersList}"
+            operationsListShow.text = "${operationsList}"
+            Toast.makeText(this@MainActivity, "Expression is: $expression", Toast.LENGTH_SHORT).show()
+
+        }
+
+        btn_delete.setOnClickListener {
+            result.text = result.text.dropLast(1)
+        }
+
+        btn_clear.setOnClickListener{
+            result.text = ""
+            numbersList.clear()
+            operationsList.clear()
         }
     }
 
