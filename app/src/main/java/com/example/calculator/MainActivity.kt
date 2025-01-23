@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -40,22 +41,8 @@ class MainActivity : AppCompatActivity() {
 
         val result = findViewById<TextView>(R.id.result)
 
-        // Keep track of the expression as a string
-        var currentExpression = ""
-
-        // Buttons for numbers
         val numberButtons =
             listOf(btn_0, btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9)
-
-        numberButtons.forEachIndexed { index, button ->
-            button.setOnClickListener {
-                // Append the number to the expression string
-                currentExpression += index.toString()
-                result.text = currentExpression
-                println("Current: $currentExpression")
-
-            }
-        }
 
         // Buttons for operations
         val operationButtons = listOf(
@@ -65,18 +52,30 @@ class MainActivity : AppCompatActivity() {
             btn_divide to "/"
         )
 
-        operationButtons.forEach { (button, operator) ->
+        numberButtons.forEachIndexed { index, button ->
             button.setOnClickListener {
-                // Append the operator to the expression string
-                currentExpression += operator
-                result.text = currentExpression
-                println("Current: $currentExpression")
-
+                result.text = result.text.toString() + index.toString()
+            }
+        }
+        var number_1 = 0
+        var number_2 = 0
+        operationButtons.forEach{ (button, operator) ->
+            button.setOnClickListener {
+                number_1 = result.text.toString().toInt()
+                result.text = (result.text.toString() + operator)
+                Toast.makeText(this@MainActivity, "First number is $number_1", Toast.LENGTH_SHORT).show()
             }
         }
 
+        btn_equal.setOnClickListener {
+            number_2 = result.text.split('+')[1].toInt()
+            Toast.makeText(this@MainActivity, "Second number is $number_2", Toast.LENGTH_SHORT).show()
+            result.text = (number_1 + number_2).toString()
+        }
 
-        println("CurrentExpression: $currentExpression")
+
+
+
     }
 
     private fun initializeViews() {

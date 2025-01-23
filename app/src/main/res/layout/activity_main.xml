@@ -16,8 +16,7 @@
         <TextView
             android:id="@+id/result"
             android:layout_width="match_parent"
-            android:layout_height="59dp"
-            android:text="TextView" />
+            android:layout_height="59dp" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/tableRow"
